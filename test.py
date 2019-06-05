@@ -1,6 +1,5 @@
 from bird import Bird
-from pipe import Pipe_up
-from pipe import Pipe_down
+from pipe import Pipe
 import random
 # from neuralnet import *
 import pygame
@@ -117,7 +116,7 @@ def collision_up (bird_x, bird_y, bird_width, bird_height, pipe_x, pipe_y, pipe_
 		if (bird_y + bird_height >= pipe_y):
 
 			# print(pipe_y)
-			# print("collision detected with up pipe")
+			print("collision detected with up pipe")
 			return True
 	return False
 
@@ -131,7 +130,7 @@ def collision_down (bird_x, bird_y, bird_width, bird_height, pipe_x, pipe_y, pip
 		if (bird_y <= pipe_y + pipe_height):
 
 			# print(pipe_y)
-			# print("collision detected with down pipe")
+			print("collision detected with down pipe")
 			return True
 	return False
 
@@ -145,8 +144,8 @@ def main():
 	pipe_sprite_list = pygame.sprite.Group()
 	bird_list.add(flappy)
 	
-	# alpha, beta = train()
-	# print("done training")
+	alpha, beta = train()
+	print("done training")
 	pygame.init()
 	width, height = 500,500
 	screen = pygame.display.set_mode((500, 500))
@@ -167,161 +166,66 @@ def main():
 	# Blit everything to the screen
 	screen.blit(background, (0, 0))
 	pygame.display.flip()
-	pipe_up_list = [] 
-	new_pipe_up_list = []
-	pipe_down_list = []
-	new_pipe_down_list = []
-	# score = 0
+	pipe_list = [] 
+	new_pipe_list = []
+	score = 0
 	for i in range(4):
-		pipe_up_height = random.randint(50,250)
-		pipe_down_height = height-90-pipe_up_height
-		pipe_up = Pipe_up(width,height,i*200,pipe_up_height)
-		pipe_down = Pipe_down(width,height,i*200,pipe_down_height)
-		new_pipe_up_list.append(pipe_up)
-		new_pipe_down_list.append(pipe_down)
-		pipe_up_list.append(pipe_up)
-		pipe_down_list.append(pipe_down)
+		pipe = Pipe(width,height,i*200)
+		# pipe_list.append(Pipe(width,height,i * 300))
+		new_pipe_list.append(pipe)
+		pipe_list.append(pipe)
 	# Event loop
 	start_count = False
 	count = 0
 	moves = []
 	def play(alpha,beta):
-		# print("hi")
+		print("hi")
+		nonlocal moves
+		width, height = 500,500
+		flappy = Bird(width,height)
+		bird_list = pygame.sprite.Group()
+		pipe_sprite_list = pygame.sprite.Group()
+		bird_list.add(flappy)
+		pipe_list = [] 
+		new_pipe_list = []
 		score = 0
-		# nonlocal moves
-		# width, height = 500,500
-		# flappy = Bird(width,height)
-		# bird_list = pygame.sprite.Group()
-		# pipe_sprite_list = pygame.sprite.Group()
-		# bird_list.add(flappy)
-		# pipe_list = [] 
-		# new_pipe_list = []
-		# score = 0
-		# for i in range(4):
-		# 	pipe = Pipe(width,height,i*200)
-		# 	# pipe_list.append(Pipe(width,height,i * 300))
-		# 	new_pipe_list.append(pipe)
-		# 	pipe_list.append(pipe)
-		# # Event loop
-
-
+		for i in range(4):
+			pipe = Pipe(width,height,i*200)
+			# pipe_list.append(Pipe(width,height,i * 300))
+			new_pipe_list.append(pipe)
+			pipe_list.append(pipe)
+		# Event loop
 		start_count = False
 		count = 0
 		while 1:
 			screen.fill((255,255,255))
 			# if init_state:
 			count+=1
-			# hor_dis = pipe_list[0].down_x - flappy.x + self.width
-			# vert_dis = pipe_list[0].down_height - flappy.y + 45
-			# x = np.asarray([hor_dis,vert_dis])
-			# obj = NNForward(x,alpha,beta)
 
-			# move = np.argmax(obj.yHat)
-			# if move == 0:
-			# 	flappy.vy = -10
 
 
 			for event in pygame.event.get():
+				if event.type == pygame.MOUSEBUTTONUP:
+					pos = pygame.mouse.get_pos()
 
+					# get a list of all sprites that are under the mouse cursor
+					clicked_sprites = [s for s in bird_list if s.rect.collidepoint(pos)]
+					print(clicked_sprites)
 				if event.type == pygame.KEYDOWN:
 					# print('hi')
 					if event.key == pygame.K_TAB:
 						print(moves)
 					if event.key == pygame.K_SPACE:
 						# print('hi')
-						# hor_dis = pipe_list[0].down_x - flappy.x + flappy.width
-						# vert_dis = pipe_list[0].down_height - flappy.y + 45
-						# moves.append((hor_dis,vert_dis,0))
+						hor_dis = pipe_list[0].down_x - flappy.x + flappy.width
+						vert_dis = pipe_list[0].down_height - flappy.y + 45
+						moves.append((hor_dis,vert_dis,0))
 						flappy.vy = -10
-			# print("getting here")
-			# print(count)
-			# if count == 5:
+				
+			bird_list.draw(screen)
 
-			# 	# hor_dis = pipe_list[0].down_x - flappy.x + flappy.width
-			# 	# vert_dis = pipe_list[0].down_height - flappy.y + 45
-			# 	# temp = [hor_dis,vert_dis]
-
-			# 	# obj = NNForward(np.asarray(temp),alpha,beta)
-			# 	# print(obj.yHat)
-			# 	# if np.argmax(obj.yHat) == 0:
-			# 	# 	print("wtf")
-			# 		# flappy.vy = -10
-
-			# if count == 10:
-			# 	hor_dis = pipe_list[0].down_x - flappy.x + flappy.width
-			# 	vert_dis = pipe_list[0].down_height - flappy.y + 45
-			# 	moves.append((hor_dis,vert_dis,1))
-			# 	count = 0 
-			# 	start_count = True
-
-			if not flappy.die:
-				flappy.update()
-
-				pipe_down_hit = pygame.sprite.spritecollide(flappy, pipe_down_list,False,pygame.sprite.collide_mask)
-				pipe_up_hit = pygame.sprite.spritecollide(flappy, pipe_up_list,False,pygame.sprite.collide_mask)
-				if pipe_down_hit or pipe_up_hit:
-					print("COLLISION DETECTED")
-					# flappy.die = True
-
-				for i in range(4):
-					pipe_down = pipe_down_list[i]
-					pipe_up = pipe_up_list[i]
-					pipe_down.update()
-					pipe_up.update()
-					if (pipe_up.x == -50):
-						# pipe_list = pipe_list[1:]
-						pipe_up_height = random.randint(50,250)
-						pipe_down_height = height-90-pipe_up_height
-						new_x = pipe_up_list[3].x + 200 - width + 50
-						pipe_up = Pipe_up(width,height,new_x,pipe_up_height)
-						pipe_down = Pipe_down(width,height,new_x,pipe_down_height)
-						pipe_up_list.append(pipe_up)
-						pipe_down_list.append(pipe_down)
-						score +=1
-						print("score is now ",score)
-						# new_pipe_list = new_pipe_list[1:]
-						# pipe_list = new_pipe_list[1:]
-				if len(pipe_up_list) > 4:
-					pipe_up_list.pop(0)
-					pipe_down_list.pop(0)
-
-
-
-				# if collision_up (flappy.x, flappy.y, flappy.width,flappy.height, pipe_list[0].up_x, 
-				# 			pipe_list[0].up_y, pipe_list[0].width, pipe_list[0].up_height):
-				# 	flappy.die = True
-				# if collision_down (flappy.x, flappy.y, flappy.width,flappy.height, pipe_list[0].down_x, 
-				# 			pipe_list[0].down_y, pipe_list[0].width, pipe_list[0].down_height):
-				# 	flappy.die = True
-			else:
-				pass
-				# print(alpha,beta)
-				# play(alpha,beta)
-				# print(alpha,beta)
-
-			# if (len(new_pipe_list) > 4):
-			# 	pipe_list = new_pipe_list[1:]
-			# 	new_pipe_list = pipe_list
-			for i in range(4):
-				pipe_up = pipe_up_list[i]
-				screen.blit(pipe_up.image,(pipe_up.x,pipe_up.y))
-
-				pipe_down = pipe_down_list[i]
-				screen.blit(pipe_down.image,(pipe_down.x,pipe_down.y))
-
-				up_list = pipe_up.mask.outline()
-				# pygame.draw.polygon(screen,(200,150,150),up_list,0)
-				down_list = pipe_down.mask.outline()
-				# pygame.draw.polygon(screen,(200,150,150),down_list,0)
-
-			screen.blit(flappy.image,(flappy.x,flappy.y))
-
-			# newolist = pipe.mask.outline()
-			# pygame.draw.polygon(screen,(200,150,150),newolist,0)
-				# pipe_list = new_pipe_list
 			pygame.display.update()
 
-	alpha,beta = [], []
 	play(alpha,beta)
 		
 
