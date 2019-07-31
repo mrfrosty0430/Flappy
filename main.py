@@ -2,9 +2,8 @@ from bird import Bird
 from pipe import Pipe_up
 from pipe import Pipe_down
 import random
-# from neuralnet import *
 import pygame
-import time 
+import time
 import numpy as np
 
 
@@ -16,137 +15,131 @@ class obj():
 		self.z = z
 		self.b = b
 		self.yHat = yHat
-		# self.J = J
 
 
 def NNForward(x,alpha,beta):
-	# print("Forward")
 	a = np.array(np.dot(alpha,x)).flatten()
 	z = 1 / (1 + (np.exp(-a)))
 	z = np.append([1],z)
-	# print(z.shape)
 	b = np.array(np.dot(beta,z)).flatten()
 	yHat = np.array(np.exp(b) / np.sum(np.exp(b))).flatten()
-	# J = -1 * np.dot(y.transpose(),np.log(yHat))
-	# print(J)
 	o = obj(x,a,z,b,yHat)
-	# print(a.shape,z.shape,b.shape,yHat.shape,J)
-	# print(J)
 	return o
 
 def NNBackward(x,y,alpha,beta,o):
 	gy = -1 * y / o.yHat
-	# print(np.diag(gy))
-	# print("this is ",(np.matrix(o.yHat).transpose() * np.matrix(o.yHat)))
 	gb = np.matrix(o.yHat - y )
-	# print(gb.shape)
-	# gb = np.matrix(np.dot(gy.transpose(),(np.diag(o.yHat) - (np.matrix(o.yHat).transpose() * np.matrix(o.yHat)))))
-	# print(gb.shape)
 	gbeta = np.dot(gb.transpose(),np.matrix(o.z.transpose()))
-	# print(gbeta.shape)
-	# print(beta.shape,gb.shape)
-
 	gz = (np.dot(beta.transpose(),gb.transpose()))[1:]
-	# print(gz.shape)
-	# print(gz)
-	# print(gz[1:])
 	z = np.matrix(o.z[1:])
 	ga = np.multiply(np.multiply(gz,z.transpose()),(1-z).transpose())
-	# print("----")
-	# print("----")
-	# print("----")
-	# print("x,ga")
-	# print(x,ga)
 	galpha = np.dot(ga,np.matrix(x))
-	# quit()
 	return galpha,gbeta
 
 
-def train():
-	temp = [(395, 202.0, 1), (345, 85.99999999999997, 1), (300, -86.80000000000013, 0), (295, -77.60000000000014, 1), (245, -29.600000000000136, 1), (220, -35.600000000000136, 0), (195, 2.3999999999998636, 1), (145, 18.399999999999864, 1), (100, -35.600000000000136, 0), (95, -26.400000000000148, 1), (45, 21.599999999999852, 1), (0, -3.6000000000001364, 0), (-5, 5.599999999999852, 1), (-55, 53.59999999999985, 1), (95, -12.400000000000148, 1), (90, -20.00000000000017, 0), (45, 33.99999999999983, 1), (-5, 17.99999999999983, 1), (-55, -78.00000000000017, 1), (125, -24.800000000000182, 0), (95, 18.399999999999807, 1), (45, 26.399999999999807, 1), (25, 7.199999999999818, 0), (-5, 50.39999999999981, 1), (-55, 58.39999999999981, 1), (105, -71.80000000000018, 0), (95, -54.200000000000216, 1), (420, 195.0, 0), (395, 233.0, 1), (345, 249.0, 1), (295, 185.0, 1), (245, 40.99999999999994, 1), (210, -107.40000000000015, 0), (195, -82.20000000000016, 1), (150, -49.80000000000018, 0), (145, -40.60000000000019, 1), (95, 7.399999999999807, 1), (60, -6.600000000000193, 0), (45, 18.599999999999795, 1), (-5, 50.599999999999795, 1), (-55, 2.5999999999997954, 1), (125, -30.000000000000227, 0), (95, 13.199999999999761, 1), (45, 21.19999999999976, 1), (15, -12.400000000000261, 0), (-5, 19.59999999999974, 1), (-55, 43.59999999999974, 1), (110, -19.200000000000273, 0), (95, 5.999999999999716, 1), (45, 37.999999999999716, 1), (-5, -10.000000000000284, 1), (-55, -138.00000000000034, 1), (130, -25.00000000000034, 0), (95, 22.599999999999625, 1), (45, 22.599999999999625, 1), (15, -15.800000000000352, 0), (-5, 16.199999999999648, 1), (-50, 41.399999999999636, 0), (-55, 50.599999999999625, 1), (100, -70.40000000000038, 0), (100, -70.40000000000038, 1), (395, 193.0, 1), (345, 76.99999999999997, 1), (315, -31.000000000000057, 0), (295, 0.9999999999999432, 1), (245, 24.999999999999943, 1), (195, -31.000000000000057, 1), (185, -51.80000000000007, 0), (145, -0.6000000000000796, 1), (95, -8.60000000000008, 1), (90, -13.800000000000068, 0), (45, 40.19999999999993, 1), (-5, 24.199999999999932, 1), (-35, -23.800000000000068, 0), (-55, 8.199999999999932, 1), (95, 4.199999999999932, 1), (75, -8.60000000000008, 0), (45, 34.59999999999991, 1), (395, 261.0, 1), (345, 144.99999999999997, 1), (295, -51.000000000000114, 1), (290, -75.00000000000011, 0), (245, -21.000000000000114, 1), (195, -37.000000000000114, 1), (180, -57.40000000000015, 0), (145, -9.800000000000182, 1), (95, -9.800000000000182, 1), (80, -25.400000000000148, 0), (45, 22.199999999999818, 1), (-5, 22.199999999999818, 1), (-50, -46.20000000000016, 0), (-55, -37.00000000000017, 1), (95, 34.99999999999983, 1), (45, 2.9999999999998295, 1), (35, -13.00000000000017, 0), (-5, 38.19999999999982, 1), (-55, 30.199999999999818, 1), (95, -21.800000000000182, 0), (95, -21.800000000000182, 1), (45, 34.19999999999982, 1), (-5, 10.199999999999818, 1), (-10, 3.3999999999998067, 0), (-55, 57.39999999999981, 1), (110, -49.400000000000205, 0), (95, -24.200000000000216, 1), (45, 7.799999999999784, 1), (35, 4.599999999999795, 0), (-5, 55.799999999999784, 1), (-55, 47.799999999999784, 1), (130, -57.80000000000024, 0), (100, -14.60000000000025, 1), (50, -6.60000000000025, 1), (40, -14.60000000000025, 0), (0, 36.59999999999974, 1), (-50, 28.59999999999974, 1), (105, 0.5999999999997385, 1), (95, -26.60000000000025, 0), (55, 24.59999999999974, 1), (5, 16.59999999999974, 1), (-10, -1.4000000000002615, 0), (-45, 46.199999999999704, 1), (110, -7.800000000000296, 1), (90, -30.2000000000003, 0), (60, 12.999999999999687, 1), (10, 20.999999999999687, 1), (-40, -51.00000000000034, 1), (140, -34.00000000000034, 0), (115, 3.999999999999659, 1), (65, 19.99999999999966, 1), (35, -8.800000000000352, 0), (15, 23.199999999999648, 1), (-35, 47.19999999999965, 1), (120, 93.19999999999965, 1), (75, -25.600000000000364, 0), (70, -16.400000000000375, 1), (20, 31.599999999999625, 1), (-15, 17.599999999999625, 0), (-30, 42.79999999999961, 1), (140, -101.40000000000038, 0), (125, -76.20000000000039, 1), (85, -44.20000000000039, 0), (75, -26.600000000000392, 1), (25, 13.399999999999608, 1), (-10, -6.2000000000003865, 0), (-25, 18.999999999999602, 1)]
-	trainData = []
-	for data in temp:
-		normx = (data[0]-500)/500
-		normy = (data[1]-500)/500
-		trainData.append((normx,normy,data[2]))
+def initialize(width,height):
+	population_size = 10
+	hidden_layer = 5
+	input_layer = 2
+	bird_list = pygame.sprite.Group()
+	for pop_idx in range(population_size):
+		bird = Bird(width,height,pop_idx,40 + 40  * pop_idx)
+
+		#initialize alpha beta layers
+
+		alpha = np.zeros((hidden_layer,input_layer))
+		beta = np.zeros((input_layer,hidden_layer+1))
+		for i in range(hidden_layer):
+			for j in range(input_layer):
+				if j == 0:
+					alpha[i][j] = 0
+				else:
+					alpha[i][j] = random.uniform(-0.5,0.5)
 
 
-	trainOutput = []
-	learningRate = 0.1
-	for data in trainData:
-		temp = [data[0],data[1]]
-		features = np.asarray(temp)
-		oneHot = np.zeros(2)
-		oneHot[data[2]] = 1
-		trainOutput.append((features,oneHot))
-	hidden = 5
-	alpha = np.zeros((hidden,2))
-	for i in range(hidden):
-		for j in range(2):
-			if j == 0:
-				alpha[i][j] = 0
-			else:
-				alpha[i][j] = random.uniform(-0.1,0.1)
-	beta = np.zeros((2,hidden+1))
-	for i in range(2	):
-		for j in range(hidden+1):
-			if j == 0:
-				beta[i][j] = 0
-			else:
-				beta[i][j] = random.uniform(-0.1,0.1)
+		for i in range(input_layer):
+			for j in range(hidden_layer+1):
+				if j == 0:
+					beta[i][j] = 0
+				else:
+					beta[i][j] = random.uniform(-0.5,0.5)
 
-	for i in range(50):
-		# print("epoch = ",i+1)
-		for (x,y) in trainOutput:
-			o = NNForward(x,alpha,beta)#pass parameters
-			galpha,gbeta = NNBackward(x,y,alpha,beta,o)
-			alpha = alpha - galpha * learningRate
-			beta = beta - gbeta * learningRate
+		bird.alpha = alpha
+		bird.beta = beta
 
-	return alpha,beta
+		bird_list.add(bird)
+
+	return bird_list
 
 
 
 
-def collision_up (bird_x, bird_y, bird_width, bird_height, pipe_x, pipe_y, pipe_width,pipe_height):
-	# horiontal collisions
-	# print(bird_y)
-	if (bird_x + bird_width >= pipe_x and bird_x <= pipe_x + pipe_width):
-		# print("in range")
+def make_crossover(max1,max2):
+	alpha_1 = max1.alpha
+	beta_1 = max1.beta
 
-		if (bird_y + bird_height >= pipe_y):
+	alpha_2 = max2.alpha
+	beta_2 = max2.beta
+	offspring = []
+	print(wtf)
+	for i in range(5):
+		#alpha crossover
 
-			# print(pipe_y)
-			# print("collision detected with up pipe")
-			return True
-	return False
-
-
-def collision_down (bird_x, bird_y, bird_width, bird_height, pipe_x, pipe_y, pipe_width,pipe_height):
-	# horiontal collisions
-	# print(bird_y)
-	if (bird_x + bird_width >= pipe_x and bird_x <= pipe_x + pipe_width):
-		# print("in range")
-
-		if (bird_y <= pipe_y + pipe_height):
-
-			# print(pipe_y)
-			# print("collision detected with down pipe")
-			return True
-	return False
+		cross_length_alpha = random.randint(0,len(alpha_1)-1)
+		# print(beta_2[0].shape)
+		new_alpha_a = np.concatenate([alpha_1[:cross_length_alpha],alpha_2[cross_length_alpha:] ])
+		new_alpha_b = np.concatenate([alpha_2[:cross_length_alpha],alpha_1[cross_length_alpha:] ])
 
 
+		#beta crossover
+		cross_length_beta1 = random.randint(0,len(beta_1[0])-1)
+		new_beta_a1 = np.concatenate([(beta_1[0])[:cross_length_beta1],(beta_2[0])[cross_length_beta1:] ])
+		# print(new_beta_a1.shape)
+		new_beta_b1 = np.concatenate([(beta_2[0])[:cross_length_beta1],(beta_1[0])[cross_length_beta1:] ])
+
+		cross_length_beta2 = random.randint(0,len(beta_1[0])-1)
+		new_beta_a2 = np.concatenate([(beta_1[1])[:cross_length_beta2],(beta_2[1])[cross_length_beta2:] ])
+		new_beta_b2 = np.concatenate([(beta_2[1])[:cross_length_beta2],(beta_1[1])[cross_length_beta2:] ])
+
+		# print(new_beta_a2.shape)
+		# print(new_beta_b2.shape)
+		# quit()
+		offspring_a = (new_alpha_a,np.array([new_beta_a1,new_beta_a2]))
+		offspring_b = (new_alpha_b,np.array([new_beta_b1,new_beta_b2]))
+		print(offspring_b[0])
+		print(offspring_b[1])
+		offspring.append(offspring_a)
+		offspring.append(offspring_b)
+
+
+	return offspring
+
+
+def apply_mutation(offsprings):
+	for offspring in offsprings:
+		#alpha mutation
+		alpha = offspring[0]
+		for row in range (len(alpha)):
+			for col in range(1,len(alpha[row])):
+				if random.random() < 1/len(alpha):
+					alpha[row][col] += random.uniform(-0.10,0.10)
+
+		#beta mutation
+		beta = offspring[1]
+		# print(beta.shape)
+		for row in range (len(beta)):
+			for col in range (1,len(beta[row])):
+				if random.random() < 1/len(beta[row]):
+					beta[row][col] += random.uniform(-0.10,0.10)
+
+
+	return offsprings
 
 
 def main():
 	width, height = 500,500
-	flappy = Bird(width,height)
-	bird_list = pygame.sprite.Group()
+	bird_list = initialize(width,height)
 	pipe_sprite_list = pygame.sprite.Group()
-	bird_list.add(flappy)
-	
-	# alpha, beta = train()
-	# print("done training")
 	pygame.init()
 	width, height = 500,500
 	screen = pygame.display.set_mode((500, 500))
@@ -167,11 +160,11 @@ def main():
 	# Blit everything to the screen
 	screen.blit(background, (0, 0))
 	pygame.display.flip()
-	pipe_up_list = [] 
+	pipe_up_list = []
 	new_pipe_up_list = []
 	pipe_down_list = []
 	new_pipe_down_list = []
-	# score = 0
+
 	for i in range(4):
 		pipe_up_height = random.randint(50,250)
 		pipe_down_height = height-90-pipe_up_height
@@ -181,95 +174,97 @@ def main():
 		new_pipe_down_list.append(pipe_down)
 		pipe_up_list.append(pipe_up)
 		pipe_down_list.append(pipe_down)
+
 	# Event loop
 	start_count = False
 	count = 0
 	moves = []
-	def play(alpha,beta):
-		# print("hi")
+	def play():
+		nonlocal pipe_down_list
+		nonlocal pipe_up_list
+
 		score = 0
-		# nonlocal moves
-		# width, height = 500,500
-		# flappy = Bird(width,height)
-		# bird_list = pygame.sprite.Group()
-		# pipe_sprite_list = pygame.sprite.Group()
-		# bird_list.add(flappy)
-		# pipe_list = [] 
-		# new_pipe_list = []
-		# score = 0
-		# for i in range(4):
-		# 	pipe = Pipe(width,height,i*200)
-		# 	# pipe_list.append(Pipe(width,height,i * 300))
-		# 	new_pipe_list.append(pipe)
-		# 	pipe_list.append(pipe)
-		# # Event loop
-
-
+		learningRate = 0.1
 		start_count = False
 		count = 0
 		while 1:
+			# print("here")
 			screen.fill((255,255,255))
-			# if init_state:
+			if count == 10:
+					count = 0
 			count+=1
-			# hor_dis = pipe_list[0].down_x - flappy.x + self.width
-			# vert_dis = pipe_list[0].down_height - flappy.y + 45
-			# x = np.asarray([hor_dis,vert_dis])
-			# obj = NNForward(x,alpha,beta)
 
-			# move = np.argmax(obj.yHat)
-			# if move == 0:
-			# 	flappy.vy = -10
-
-
+			for bird in bird_list:
+				if not bird.die:
+					bird.fitness += 0.01
 			for event in pygame.event.get():
 
 				if event.type == pygame.KEYDOWN:
-					# print('hi')
 					if event.key == pygame.K_TAB:
-						print(moves)
+						for bird in bird_list:
+							print("\n\n\n\n")
+							print(bird.alpha)
+							print("\n")
+							print(bird.beta)
 					if event.key == pygame.K_SPACE:
-						# print('hi')
-						# hor_dis = pipe_list[0].down_x - flappy.x + flappy.width
-						# vert_dis = pipe_list[0].down_height - flappy.y + 45
-						# moves.append((hor_dis,vert_dis,0))
-						flappy.vy = -10
-			# print("getting here")
-			# print(count)
-			# if count == 5:
+						print("presed")
+						for bird in bird_list:
+							bird.restart()
+						for i in range(4):
+							pipe_up_height = random.randint(50,250)
+							pipe_down_height = height-90-pipe_up_height
+							pipe_up = Pipe_up(width,height,i*200,pipe_up_height)
+							pipe_down = Pipe_down(width,height,i*200,pipe_down_height)
+							new_pipe_up_list.append(pipe_up)
+							new_pipe_down_list.append(pipe_down)
+							pipe_up_list.append(pipe_up)
+							pipe_down_list.append(pipe_down)
 
-			# 	# hor_dis = pipe_list[0].down_x - flappy.x + flappy.width
-			# 	# vert_dis = pipe_list[0].down_height - flappy.y + 45
-			# 	# temp = [hor_dis,vert_dis]
+			playing = False
 
-			# 	# obj = NNForward(np.asarray(temp),alpha,beta)
-			# 	# print(obj.yHat)
-			# 	# if np.argmax(obj.yHat) == 0:
-			# 	# 	print("wtf")
-			# 		# flappy.vy = -10
+			for bird in bird_list:
+				if not bird.die:
+					playing = True
 
-			# if count == 10:
-			# 	hor_dis = pipe_list[0].down_x - flappy.x + flappy.width
-			# 	vert_dis = pipe_list[0].down_height - flappy.y + 45
-			# 	moves.append((hor_dis,vert_dis,1))
-			# 	count = 0 
-			# 	start_count = True
+			if playing:
+				# print(len(bird_list))
+				for bird in bird_list:
+					if not bird.die:
 
-			if not flappy.die:
-				flappy.update()
+						if count == 10:
+							hor_dis = pipe_down_list[0].x - bird.x + bird.width
+							vert_dis = pipe_down_list[0].pipe_height - bird.y + 45
+							print(vert_dis)
+							temp = [(vert_dis),(hor_dis)]
+							x = np.asarray(temp)
+							o = NNForward(x,bird.alpha,bird.beta)
+							# print("alpha shape", bird.alpha.shape)
+							# print("beta shape", bird.beta.shape)
+							# print(bird.beta)
+							yHat = o.yHat
+							print(np.max(yHat))
+							print(yHat)
+							# argMax = np.argmax(yHat)
+							if yHat[1] >= 0.5:
+								# y = np.array([1,0])
+								print("bird", bird.prio, "wants to jump")
+								bird.vy -= 10
+							# else:
+								# y = np.array([0,1])
+						bird.update()
 
-				pipe_down_hit = pygame.sprite.spritecollide(flappy, pipe_down_list,False,pygame.sprite.collide_mask)
-				pipe_up_hit = pygame.sprite.spritecollide(flappy, pipe_up_list,False,pygame.sprite.collide_mask)
-				if pipe_down_hit or pipe_up_hit:
-					print("COLLISION DETECTED")
-					# flappy.die = True
-
+						pipe_down_hit = pygame.sprite.spritecollide(bird, pipe_down_list,False,pygame.sprite.collide_mask)
+						pipe_up_hit = pygame.sprite.spritecollide(bird, pipe_up_list,False,pygame.sprite.collide_mask)
+						if pipe_down_hit or pipe_up_hit:
+							bird.fitness -= abs(bird.y - pipe_down_list[0].pipe_height) * 0.05
+							bird.die = True
 				for i in range(4):
 					pipe_down = pipe_down_list[i]
 					pipe_up = pipe_up_list[i]
 					pipe_down.update()
 					pipe_up.update()
 					if (pipe_up.x == -50):
-						# pipe_list = pipe_list[1:]
+
 						pipe_up_height = random.randint(50,250)
 						pipe_down_height = height-90-pipe_up_height
 						new_x = pipe_up_list[3].x + 200 - width + 50
@@ -278,52 +273,52 @@ def main():
 						pipe_up_list.append(pipe_up)
 						pipe_down_list.append(pipe_down)
 						score +=1
-						print("score is now ",score)
-						# new_pipe_list = new_pipe_list[1:]
-						# pipe_list = new_pipe_list[1:]
+
 				if len(pipe_up_list) > 4:
 					pipe_up_list.pop(0)
 					pipe_down_list.pop(0)
 
-
-
-				# if collision_up (flappy.x, flappy.y, flappy.width,flappy.height, pipe_list[0].up_x, 
-				# 			pipe_list[0].up_y, pipe_list[0].width, pipe_list[0].up_height):
-				# 	flappy.die = True
-				# if collision_down (flappy.x, flappy.y, flappy.width,flappy.height, pipe_list[0].down_x, 
-				# 			pipe_list[0].down_y, pipe_list[0].width, pipe_list[0].down_height):
-				# 	flappy.die = True
 			else:
-				pass
-				# print(alpha,beta)
-				# play(alpha,beta)
-				# print(alpha,beta)
+				#choose 2 parents for genetic algorithm
+				fitness_list = []
+				for bird in bird_list:
+					fitness_list.append((bird.fitness,bird))
+				sorted_list = sorted(fitness_list, key=lambda tup: tup[1])
+				max_1 = (sorted_list[-1])[1]
+				max_2 = (sorted_list[-2])[1]
+				mutated_offsprings = make_crossover(max_1,max_2)
+				# mutated_offsprings = apply_mutation(offsprings)
+				pipe_down_list = []
+				pipe_up_list = []
+				for i in range(4):
+					pipe_up_height = random.randint(50,250)
+					pipe_down_height = height-90-pipe_up_height
+					pipe_up = Pipe_up(width,height,i*200,pipe_up_height)
+					pipe_down = Pipe_down(width,height,i*200,pipe_down_height)
+					new_pipe_up_list.append(pipe_up)
+					new_pipe_down_list.append(pipe_down)
+					pipe_up_list.append(pipe_up)
+					pipe_down_list.append(pipe_down)
+				for bird in bird_list:
+					bird.restart()
 
-			# if (len(new_pipe_list) > 4):
-			# 	pipe_list = new_pipe_list[1:]
-			# 	new_pipe_list = pipe_list
+				count = 0
+				for bird in bird_list:
+					bird.alpha = mutated_offsprings[count][0]
+					bird.beta = mutated_offsprings[count][1]
+					count += 1
 			for i in range(4):
 				pipe_up = pipe_up_list[i]
 				screen.blit(pipe_up.image,(pipe_up.x,pipe_up.y))
-
 				pipe_down = pipe_down_list[i]
 				screen.blit(pipe_down.image,(pipe_down.x,pipe_down.y))
-
-				up_list = pipe_up.mask.outline()
-				# pygame.draw.polygon(screen,(200,150,150),up_list,0)
-				down_list = pipe_down.mask.outline()
-				# pygame.draw.polygon(screen,(200,150,150),down_list,0)
-
-			screen.blit(flappy.image,(flappy.x,flappy.y))
-
-			# newolist = pipe.mask.outline()
-			# pygame.draw.polygon(screen,(200,150,150),newolist,0)
-				# pipe_list = new_pipe_list
+			for bird in bird_list:
+				if not bird.die:
+					screen.blit(bird.image,(bird.x,bird.y))
 			pygame.display.update()
 
-	alpha,beta = [], []
-	play(alpha,beta)
-		
+	play()
+
 
 
 
