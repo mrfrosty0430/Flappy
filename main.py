@@ -3,6 +3,7 @@ from pipe import Pipe_up
 from pipe import Pipe_down
 import random
 import pygame
+import math
 import time
 import numpy as np
 
@@ -83,7 +84,7 @@ def make_crossover(max1,max2):
 	offspring = []
 	print(wtf)
 	for i in range(5):
-		#alpha crossover
+		#alpha crossover`
 
 		cross_length_alpha = random.randint(0,len(alpha_1)-1)
 		# print(beta_2[0].shape)
